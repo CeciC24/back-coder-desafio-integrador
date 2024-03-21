@@ -1,6 +1,8 @@
 import CartsModel from "../models/cartsModel.js";
 import ProductManager from "./ProductManager.js";
 
+const ProductMngr = new ProductManager()
+
 class CartManager {
     constructor() {
         console.log('CartManager constructor')
@@ -23,40 +25,46 @@ class CartManager {
 
     async addProductToCart(cid, pid) {
         let cart = await this.getCartById(cid)
-        let product = await ProductManager.getProductById(pid)
+        let product = await ProductMngr.getProductById(pid)
         
-        if (cart && product) {
-            let prodID = product._id
-
-            if (prodID) {
-                CartsModel.updateOne(
-                    { _id: cid, "products._id": prodID },
-                    { $inc: { "products.$.quantity": 1 } }
-                )
+        if (cart) {
+            if(product) {
+                if (cart.products.find(p => p._id == pid)) {
+                    await CartsModel.updateOne(
+                        { _id: cid, "products._id": pid },
+                        { $inc: { "products.$.quantity": 1 } }
+                    )
+                } else {
+                    await CartsModel.updateOne(
+                        { _id: cid },
+                        { $push: { products: { _id: pid, quantity: 1 } } }
+                    )
+                }
             } else {
-                CartsModel.updateOne(
-                    { _id: cid },
-                    { $push: { products: { _id: pid, quantity: 1 } } }
-                )
+                throw new Error(`⚠️  Product ID: ${pid} Not found`)
             }
+        } else {
+            throw new Error(`⚠️  Cart ID: ${cid} Not found`)
         }
+
+        let updatedCart = await this.getCartById(cid)
+        return updatedCart
     }
 
     async deleteProductFromCart(cid, pid) {
         let cart = await this.getCartById(cid)
-        let product = await ProductManager.getProductById(pid)
         
-        if (cart && product) {
-            let prodID = product._id
+        if (cart) {
+            const prodInCart = cart.products.find(p => p._id == pid)
 
-            if (prodID) {
-                if(product.quantity > 1) {
-                    CartsModel.updateOne(
-                        { _id: cid, "products._id": prodID },
+            if (prodInCart) {
+                if(prodInCart.quantity > 1) {
+                    await CartsModel.updateOne(
+                        { _id: cid, "products._id": pid },
                         { $inc: { "products.$.quantity": -1 } }
                     )
                 } else {
-                    CartsModel.updateOne(
+                    await CartsModel.updateOne(
                         { _id: cid },
                         { $pull: { products: { _id: pid } } }
                     )
@@ -64,7 +72,12 @@ class CartManager {
             } else {
                 throw new Error(`⚠️  Product ID: ${pid} Not found`)
             }
+        } else {
+            throw new Error(`⚠️  Cart ID: ${cid} Not found`)
         }
+
+        let updatedCart = await this.getCartById(cid)
+        return updatedCart
     }
 
     async deleteCart(id) {

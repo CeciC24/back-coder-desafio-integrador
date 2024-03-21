@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import CartManager from '../dao/services/CartManager.js';
+import CartRouter from './fileSystem/carts.routes.js';
 
 const CartMngr = new CartManager()
 const CartsRouter = Router()
@@ -39,6 +40,27 @@ CartsRouter.post("/:cid/product/:pid", async (req, res) => {
         res.send(await CartMngr.addProductToCart(cid, pid))
     } catch (error) {
         res.status(500).send({ error: 'Error al agregar producto al carrito' })
+    }
+})
+
+CartRouter.delete("/:cid/product/:pid", async (req, res) => {
+    let cid = req.params.cid
+    let pid = req.params.pid
+
+    try {
+        res.send(await CartMngr.deleteProductFromCart(cid, pid))
+    } catch (error) {
+        res.status(500).send({ error: 'Error al eliminar producto del carrito' })
+    }
+})
+
+CartsRouter.delete("/:cid", async (req, res) => {
+    let cid = req.params.cid
+
+    try {
+        res.send(await CartMngr.deleteCart(cid))
+    } catch (error) {
+        res.status(500).send({ error: 'Error al eliminar carrito' })
     }
 })
 
