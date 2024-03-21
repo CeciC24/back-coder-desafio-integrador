@@ -39,18 +39,18 @@ CartsRouter.post("/:cid/product/:pid", async (req, res) => {
     try {
         res.send(await CartMngr.addProductToCart(cid, pid))
     } catch (error) {
-        res.status(500).send({ error: 'Error al agregar producto al carrito' })
+        res.status(500).send({ error: 'Error al agregar producto al carrito | ' + error.message })
     }
 })
 
-CartRouter.delete("/:cid/product/:pid", async (req, res) => {
+CartsRouter.delete("/:cid/product/:pid", async (req, res) => {
     let cid = req.params.cid
     let pid = req.params.pid
 
     try {
         res.send(await CartMngr.deleteProductFromCart(cid, pid))
     } catch (error) {
-        res.status(500).send({ error: 'Error al eliminar producto del carrito' })
+        res.status(500).send({ error: 'Error al eliminar producto del carrito | ' + error.message })
     }
 })
 
