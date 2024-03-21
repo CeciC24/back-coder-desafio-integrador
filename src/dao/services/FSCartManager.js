@@ -1,10 +1,10 @@
 import fs from 'fs'
 import { nanoid } from 'nanoid'
-import ProductManager from './ProductManager.js'
+import ProductManager from './FSProductManager.js'
 
-const AllProducts = new ProductManager('src/models/products.json')
+const AllProducts = new ProductManager('src/data/products.json')
 
-class CartManager {
+class FSCartManager {
 	constructor(path) {
 		this.path = path
 		this.carts = []
@@ -91,4 +91,4 @@ class CartManager {
 	}
 }
 
-export default CartManager
+export default FSCartManager

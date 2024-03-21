@@ -1,19 +1,18 @@
 import { Router } from 'express';
-import CartManager from '../dao/services/CartManager.js';
+import CartManager from '../../dao/services/FSCartManager.js'
 
-const CartMngr = new CartManager()
-const CartsRouter = Router()
+const CartMngr = new CartManager('src/data/cart.json')
+const CartRouter = Router()
 
-CartsRouter.post("/", async (req, res) => {
+CartRouter.post("/", async (req, res) => {
     try {
-        let newCart = await CartMngr.addCart()
-        res.send(newCart)
+        res.send(await CartMngr.addCart())
     } catch (error) {
         res.status(500).send({ error: 'Error al crear carrito' })
     }
 })
 
-CartsRouter.get("/", async (req, res) => {
+CartRouter.get("/", async (req, res) => {
     try {
         res.send(await CartMngr.getCarts())
     } catch (error) {
@@ -21,7 +20,7 @@ CartsRouter.get("/", async (req, res) => {
     }
 })
 
-CartsRouter.get("/:cid", async (req, res) => {
+CartRouter.get("/:cid", async (req, res) => {
     let cid = req.params.cid
 
     try {
@@ -31,7 +30,7 @@ CartsRouter.get("/:cid", async (req, res) => {
     }
 })
 
-CartsRouter.post("/:cid/product/:pid", async (req, res) => {
+CartRouter.post("/:cid/product/:pid", async (req, res) => {
     let cid = req.params.cid
     let pid = req.params.pid
 
@@ -42,4 +41,4 @@ CartsRouter.post("/:cid/product/:pid", async (req, res) => {
     }
 })
 
-export default CartsRouter
+export default CartRouter
