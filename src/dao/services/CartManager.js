@@ -56,7 +56,7 @@ class CartManager {
         
         if (cart) {
             const prodInCart = cart.products.find(p => p._id == pid)
-            console.log("prodInCart", prodInCart)
+            
             if (prodInCart) {
                 if(prodInCart.quantity > 1) {
                     await CartsModel.updateOne(
